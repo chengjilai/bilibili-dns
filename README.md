@@ -21,8 +21,11 @@ Browser → glibc → /etc/resolv.conf → 127.0.0.1:53 (dnsmasq)
 ## Setup
 
 ```shell
+git clone git@github.com:chengjilai/bilibili-dns.git
+cd bilibili-dns
+
 # 1. Link dnsmasq drop-in config (sudo)
-sudo ln -sf ~/bilibili-dns/dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
+sudo ln -sf dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
 
 # 2. Enable conf-dir in /etc/dnsmasq.conf (sudo)
 sudo sed -i 's|^#conf-dir=/etc/dnsmasq.d/,\*\.conf|conf-dir=/etc/dnsmasq.d/,*.conf|' /etc/dnsmasq.conf
@@ -35,7 +38,7 @@ sudo systemctl enable --now dnsmasq
 sudo systemctl restart dnsmasq
 
 # 5. Install and start the DoH proxy (as user)
-ln -sf ~/bilibili-dns/doh-proxy.service ~/.config/systemd/user/
+ln -sf doh-proxy.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now doh-proxy
 ```
@@ -50,8 +53,8 @@ getent hosts bilibili.com api.live.bilibili.com cn-sh-fx-01-01.bilivideo.com i2.
 
 | File | Change |
 |------|--------|
-| `/etc/dnsmasq.d/bilibili.conf` | symlink → `~/bilibili-dns/dnsmasq.conf` |
+| `/etc/dnsmasq.d/bilibili.conf` | symlink → `dnsmasq.conf` |
 | `/etc/dnsmasq.conf` | uncommented `conf-dir=/etc/dnsmasq.d/,*.conf` |
 | `/etc/resolv.conf` | prepended `nameserver 127.0.0.1` |
-| `~/.config/systemd/user/doh-proxy.service` | symlink → `~/bilibili-dns/doh-proxy.service` |
+| `~/.config/systemd/user/doh-proxy.service` | symlink → `doh-proxy.service` |
 
