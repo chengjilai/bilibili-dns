@@ -1,0 +1,11 @@
+[Unit]
+Description=DNS proxy for bilibili (DoH) + school DNS fallback
+After=network-online.target
+
+[Service]
+ExecStart=%h/bilibili-dns/doh-proxy.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

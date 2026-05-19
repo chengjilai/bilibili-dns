@@ -1,0 +1,57 @@
+# bilibili-dns
+
+Bypass SJTU DNS blocking for bilibili via DNS-over-HTTPS.
+
+## Dependencies
+
+- `python3`
+- `dnsmasq`
+- `systemd`
+
+## How it works
+
+```
+Browser → glibc → /etc/resolv.conf → 127.0.0.1:53 (dnsmasq)
+  ├── *.bilibili.com   → 127.0.0.1:5353 (doh-proxy.py) → https://doh.pub/dns-query
+  ├── *.bilivideo.com  → 127.0.0.1:5353                 → https://doh.pub/dns-query
+  ├── *.hdslb.com      → 127.0.0.1:5353                 → https://doh.pub/dns-query
+  └── *                → school DNS (202.120.2.101)
+```
+
+## Setup
+
+```shell
+# 1. Link dnsmasq drop-in config (sudo)
+sudo ln -sf ~/bilibili-dns/dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
+
+# 2. Enable conf-dir in /etc/dnsmasq.conf (sudo)
+sudo sed -i 's|^#conf-dir=/etc/dnsmasq.d/,\*\.conf|conf-dir=/etc/dnsmasq.d/,*.conf|' /etc/dnsmasq.conf
+
+# 3. Add 127.0.0.1 to /etc/resolv.conf (sudo)
+sudo sed -i '1inameserver 127.0.0.1' /etc/resolv.conf
+
+# 4. Restart dnsmasq (sudo)
+sudo systemctl enable --now dnsmasq
+sudo systemctl restart dnsmasq
+
+# 5. Install and start the DoH proxy (as user)
+ln -sf ~/bilibili-dns/doh-proxy.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now doh-proxy
+```
+
+## Verify
+
+```shell
+getent hosts bilibili.com api.live.bilibili.com cn-sh-fx-01-01.bilivideo.com i2.hdslb.com
+```
+
+## Effects
+
+| File | Change |
+|------|--------|
+| `/etc/dnsmasq.d/bilibili.conf` | symlink → `~/bilibili-dns/dnsmasq.conf` |
+| `/etc/dnsmasq.conf` | uncommented `conf-dir=/etc/dnsmasq.d/,*.conf` |
+| `/etc/resolv.conf` | prepended `nameserver 127.0.0.1` |
+| `~/.config/systemd/user/doh-proxy.service` | symlink → `~/bilibili-dns/doh-proxy.service` |
+
