@@ -25,7 +25,7 @@ git clone git@github.com:chengjilai/bilibili-dns.git
 cd bilibili-dns
 
 # 1. Link dnsmasq drop-in config (sudo)
-sudo ln -sf dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
+sudo ln -rsf dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
 
 # 2. Enable conf-dir in /etc/dnsmasq.conf (sudo)
 sudo sed -i 's|^#conf-dir=/etc/dnsmasq.d/,\*\.conf|conf-dir=/etc/dnsmasq.d/,*.conf|' /etc/dnsmasq.conf
@@ -38,7 +38,7 @@ sudo systemctl enable --now dnsmasq
 sudo systemctl restart dnsmasq
 
 # 5. Install and start the DoH proxy (as user)
-ln -sf doh-proxy.service ~/.config/systemd/user/
+ln -rsf doh-proxy.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now doh-proxy
 ```
