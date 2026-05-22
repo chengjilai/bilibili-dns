@@ -1,4 +1,5 @@
-.PHONY: all dns doh uninstall verify
+.ONESHELL:
+.PHONY: install dns doh uninstall verify
 
 install: dns doh
 
@@ -6,13 +7,13 @@ dns:
 	sudo ln -rsf dnsmasq.conf /etc/dnsmasq.d/bilibili.conf
 	sudo sed -i 's|^#conf-dir=/etc/dnsmasq.d/,\*\.conf|conf-dir=/etc/dnsmasq.d/,*.conf|' /etc/dnsmasq.conf
 	sudo sed -i '1inameserver 127.0.0.1' /etc/resolv.conf
-	sudo tee /etc/NetworkManager/dispatcher.d/prepend-local-dns >/dev/null <<'EOF'
-#!/bin/bash
-if [ "$$2" = "up" ] || [ "$$2" = "dhcp4-change" ] || [ "$$2" = "dhcp6-change" ]; then
-    sed -i '/^nameserver 127\.0\.0\.1/d' /etc/resolv.conf
-    sed -i '1inameserver 127.0.0.1' /etc/resolv.conf
-fi
-EOF
+	sudo tee /etc/NetworkManager/dispatcher.d/prepend-local-dns >/dev/null <<-'EOF'
+	#!/bin/bash
+	if [ "$$2" = "up" ] || [ "$$2" = "dhcp4-change" ] || [ "$$2" = "dhcp6-change" ]; then
+		sed -i '/^nameserver 127\.0\.0\.1/d' /etc/resolv.conf
+		sed -i '1inameserver 127.0.0.1' /etc/resolv.conf
+	fi
+	EOF
 	sudo chmod +x /etc/NetworkManager/dispatcher.d/prepend-local-dns
 	sudo systemctl enable --now dnsmasq
 	sudo systemctl restart dnsmasq
