@@ -23,10 +23,10 @@ Browser → glibc → /etc/resolv.conf → 127.0.0.1:53 (dnsmasq)
 ```shell
 git clone git@github.com:chengjilai/bilibili-dns.git
 cd bilibili-dns
-make install
+make
 ```
 
-`make install` runs `dns` (system-wide) and `doh` (user-level proxy). Use `make dns` or `make doh` individually if needed.
+`make` runs `dns` (system-wide) and `doh` (user-level proxy). Use `make dns` or `make doh` individually if needed.
 
 ## Verify
 

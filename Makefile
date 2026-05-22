@@ -1,4 +1,4 @@
-.PHONY: install dns doh uninstall verify
+.PHONY: all dns doh uninstall verify
 
 install: dns doh
 
